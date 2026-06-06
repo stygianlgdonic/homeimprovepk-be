@@ -1,0 +1,15 @@
+import { IsString, IsNumber, IsOptional, Min, Max, IsInt } from 'class-validator';
+
+export class CreateReviewDto {
+  @IsString()
+  bookingId: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  rating: number;
+
+  @IsOptional()
+  @IsString()
+  comment?: string;
+}
