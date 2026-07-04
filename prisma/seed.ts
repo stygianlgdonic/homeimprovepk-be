@@ -57,21 +57,21 @@ async function main() {
     const electrical = await prisma.serviceCategory.findUnique({ where: { slug: 'electrical' } });
     const painting = await prisma.serviceCategory.findUnique({ where: { slug: 'painting' } });
 
-    const thekedaar1 = await prisma.user.upsert({
+    const contractor1 = await prisma.user.upsert({
       where: { phone: '+923001111111' },
       update: {},
       create: {
         phone: '+923001111111',
         name: 'Ahmed Khan',
-        role: UserRole.THEKEDAAR,
+        role: UserRole.CONTRACTOR,
       },
     });
 
-    await prisma.thekedaarProfile.upsert({
-      where: { userId: thekedaar1.id },
+    await prisma.contractorProfile.upsert({
+      where: { userId: contractor1.id },
       update: {},
       create: {
-        userId: thekedaar1.id,
+        userId: contractor1.id,
         bio: 'Experienced plumber with 10+ years in Lahore. Specializes in pipe installation and leak repairs.',
         cnicNumber: '35202-1234567-1',
         verificationStatus: VerificationStatus.APPROVED,
@@ -85,21 +85,21 @@ async function main() {
       },
     });
 
-    const thekedaar2 = await prisma.user.upsert({
+    const contractor2 = await prisma.user.upsert({
       where: { phone: '+923002222222' },
       update: {},
       create: {
         phone: '+923002222222',
         name: 'Bilal Electrician',
-        role: UserRole.THEKEDAAR,
+        role: UserRole.CONTRACTOR,
       },
     });
 
-    await prisma.thekedaarProfile.upsert({
-      where: { userId: thekedaar2.id },
+    await prisma.contractorProfile.upsert({
+      where: { userId: contractor2.id },
       update: {},
       create: {
-        userId: thekedaar2.id,
+        userId: contractor2.id,
         bio: 'Certified electrician. Available in Karachi for all electrical work.',
         verificationStatus: VerificationStatus.APPROVED,
         pricingRangeMin: 1500,

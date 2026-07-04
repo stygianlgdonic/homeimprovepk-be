@@ -13,7 +13,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 
-class VerifyThekedaarDto {
+class VerifyContractorDto {
   status: 'APPROVED' | 'REJECTED';
 }
 
@@ -28,17 +28,17 @@ export class AdminController {
     return this.adminService.getStats();
   }
 
-  @Get('thekedaars')
-  getPendingThekedaars(@Query('status') status?: string) {
-    return this.adminService.getPendingThekedaars(status);
+  @Get('contractors')
+  getPendingContractors(@Query('status') status?: string) {
+    return this.adminService.getPendingContractors(status);
   }
 
-  @Patch('thekedaars/:id/verify')
-  verifyThekedaar(
+  @Patch('contractors/:id/verify')
+  verifyContractor(
     @Param('id') id: string,
-    @Body() body: VerifyThekedaarDto,
+    @Body() body: VerifyContractorDto,
   ) {
-    return this.adminService.verifyThekedaar(id, body.status);
+    return this.adminService.verifyContractor(id, body.status);
   }
 
   @Get('disputes')

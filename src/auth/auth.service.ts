@@ -24,7 +24,7 @@ export class AuthService {
     });
 
     if (!isStub) {
-      await this.sendSms(dto.phone, `Your ThekedaarPK code is: ${code}`);
+      await this.sendSms(dto.phone, `Your HomeImprovePK code is: ${code}`);
     }
 
     return { message: isStub ? `OTP sent (stub: ${code})` : 'OTP sent' };

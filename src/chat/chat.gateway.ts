@@ -81,7 +81,7 @@ export class ChatGateway
 
     if (!room) throw new WsException('Room not found');
 
-    if (room.homeownerId !== user.id && room.thekedaarId !== user.id) {
+    if (room.homeownerId !== user.id && room.contractorId !== user.id) {
       throw new WsException('Forbidden');
     }
 

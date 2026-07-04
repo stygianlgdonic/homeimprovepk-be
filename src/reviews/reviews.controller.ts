@@ -24,8 +24,8 @@ export class ReviewsController {
     return this.reviewsService.create(user.id, dto);
   }
 
-  @Get('thekedaars/:id/reviews')
-  findByThekedaar(@Param('id') id: string) {
-    return this.reviewsService.findByThekedaar(id);
+  @Get('contractors/:id/reviews')
+  findByContractor(@Param('id') id: string) {
+    return this.reviewsService.findByContractor(id);
   }
 }

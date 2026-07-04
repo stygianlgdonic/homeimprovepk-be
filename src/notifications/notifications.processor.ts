@@ -111,7 +111,7 @@ export class NotificationsProcessor extends WorkerHost {
 
     const typeMessages = messages[type];
     if (!typeMessages) {
-      return `ThekedaarPK: You have a new notification.`;
+      return `HomeImprovePK: You have a new notification.`;
     }
 
     return typeMessages[lang] ?? typeMessages['en'];

@@ -11,7 +11,7 @@ datasource db {
 
 enum UserRole {
   HOMEOWNER
-  THEKEDAAR
+  CONTRACTOR
   ADMIN
 }
 
@@ -69,15 +69,15 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  thekedaarProfile  ThekedaarProfile?
+  contractorProfile  ContractorProfile?
   jobPosts          JobPost[]         @relation("HomeownerJobs")
-  quotesGiven       Quote[]           @relation("ThekedaarQuotes")
+  quotesGiven       Quote[]           @relation("ContractorQuotes")
   bookingsAsOwner   Booking[]         @relation("HomeownerBookings")
-  bookingsAsWorker  Booking[]         @relation("ThekedaarBookings")
+  bookingsAsWorker  Booking[]         @relation("ContractorBookings")
   reviewsWritten    Review[]          @relation("ReviewAuthor")
   reviewsReceived   Review[]          @relation("ReviewSubject")
   chatRoomsAsOwner  ChatRoom[]        @relation("HomeownerChatRooms")
-  chatRoomsAsWorker ChatRoom[]        @relation("ThekedaarChatRooms")
+  chatRoomsAsWorker ChatRoom[]        @relation("ContractorChatRooms")
   messages          Message[]
   notifications     Notification[]
 }
@@ -93,7 +93,7 @@ model OtpCode {
   @@index([phone])
 }
 
-model ThekedaarProfile {
+model ContractorProfile {
   id                 String             @id @default(cuid())
   userId             String             @unique
   bio                String?
@@ -122,7 +122,7 @@ model ServiceCategory {
   icon   String @default("tool")
 
   jobPosts   JobPost[]
-  thekedaars ThekedaarProfile[]
+  contractors ContractorProfile[]
 }
 
 model City {
@@ -132,7 +132,7 @@ model City {
   nameUr String
 
   jobPosts   JobPost[]
-  thekedaars ThekedaarProfile[]
+  contractors ContractorProfile[]
 }
 
 model JobPost {
@@ -161,7 +161,7 @@ model JobPost {
 model Quote {
   id            String      @id @default(cuid())
   jobPostId     String
-  thekedaarId   String
+  contractorId   String
   amount        Decimal     @db.Decimal(10, 2)
   description   String
   estimatedDays Int
@@ -170,10 +170,10 @@ model Quote {
   updatedAt     DateTime    @updatedAt
 
   jobPost   JobPost @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
-  thekedaar User    @relation("ThekedaarQuotes", fields: [thekedaarId], references: [id])
+  contractor User    @relation("ContractorQuotes", fields: [contractorId], references: [id])
   booking   Booking?
 
-  @@unique([jobPostId, thekedaarId])
+  @@unique([jobPostId, contractorId])
 }
 
 model Booking {
@@ -181,7 +181,7 @@ model Booking {
   jobPostId   String        @unique
   quoteId     String        @unique
   homeownerId String
-  thekedaarId String
+  contractorId String
   status      BookingStatus @default(SCHEDULED)
   scheduledAt DateTime?
   completedAt DateTime?
@@ -191,7 +191,7 @@ model Booking {
   jobPost   JobPost  @relation(fields: [jobPostId], references: [id])
   quote     Quote    @relation(fields: [quoteId], references: [id])
   homeowner User     @relation("HomeownerBookings", fields: [homeownerId], references: [id])
-  thekedaar User     @relation("ThekedaarBookings", fields: [thekedaarId], references: [id])
+  contractor User     @relation("ContractorBookings", fields: [contractorId], references: [id])
   reviews   Review[]
   payment   Payment?
 }
@@ -216,12 +216,12 @@ model ChatRoom {
   id          String   @id @default(cuid())
   jobPostId   String   @unique
   homeownerId String
-  thekedaarId String
+  contractorId String
   createdAt   DateTime @default(now())
 
   jobPost   JobPost   @relation(fields: [jobPostId], references: [id])
   homeowner User      @relation("HomeownerChatRooms", fields: [homeownerId], references: [id])
-  thekedaar User      @relation("ThekedaarChatRooms", fields: [thekedaarId], references: [id])
+  contractor User      @relation("ContractorChatRooms", fields: [contractorId], references: [id])
   messages  Message[]
 }
 

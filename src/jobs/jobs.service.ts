@@ -68,17 +68,17 @@ export class JobsService {
     if (role === UserRole.HOMEOWNER) {
       where.homeownerId = userId;
       if (status) where.status = status;
-    } else if (role === UserRole.THEKEDAAR) {
-      // Thekedaars see OPEN jobs in cities they cover
+    } else if (role === UserRole.CONTRACTOR) {
+      // Contractors see OPEN jobs in cities they cover
       where.status = JobStatus.OPEN;
 
-      const thekedaarProfile = await this.prisma.thekedaarProfile.findUnique({
+      const contractorProfile = await this.prisma.contractorProfile.findUnique({
         where: { userId },
         include: { cities: { select: { id: true } } },
       });
 
-      if (thekedaarProfile && thekedaarProfile.cities.length > 0) {
-        where.cityId = { in: thekedaarProfile.cities.map((c) => c.id) };
+      if (contractorProfile && contractorProfile.cities.length > 0) {
+        where.cityId = { in: contractorProfile.cities.map((c) => c.id) };
       }
     } else if (role === UserRole.ADMIN) {
       if (status) where.status = status;
@@ -126,12 +126,12 @@ export class JobsService {
         },
         quotes: {
           include: {
-            thekedaar: {
+            contractor: {
               select: {
                 id: true,
                 name: true,
                 avatarUrl: true,
-                thekedaarProfile: { select: { avgRating: true, verificationStatus: true } },
+                contractorProfile: { select: { avgRating: true, verificationStatus: true } },
               },
             },
           },
@@ -162,16 +162,16 @@ export class JobsService {
       throw new ForbiddenException('You do not own this job');
     }
 
-    if (role === UserRole.THEKEDAAR) {
-      // Thekedaars can only cancel jobs they are booked for
+    if (role === UserRole.CONTRACTOR) {
+      // Contractors can only cancel jobs they are booked for
       const booking = await this.prisma.booking.findFirst({
-        where: { jobPostId: id, thekedaarId: userId },
+        where: { jobPostId: id, contractorId: userId },
       });
       if (!booking) {
         throw new ForbiddenException('You are not authorized to update this job status');
       }
       if (dto.status !== JobStatus.CANCELLED) {
-        throw new ForbiddenException('Thekedaars may only cancel jobs');
+        throw new ForbiddenException('Contractors may only cancel jobs');
       }
     }
 

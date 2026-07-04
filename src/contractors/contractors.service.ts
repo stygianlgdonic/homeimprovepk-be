@@ -10,7 +10,7 @@ interface FindAllFilters {
 }
 
 @Injectable()
-export class ThekedaarsService {
+export class ContractorsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll({ categorySlug, citySlug, page = 1, limit = 10 }: FindAllFilters) {
@@ -33,7 +33,7 @@ export class ThekedaarsService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.thekedaarProfile.findMany({
+      this.prisma.contractorProfile.findMany({
         where,
         skip,
         take: limit,
@@ -51,14 +51,14 @@ export class ThekedaarsService {
         },
         orderBy: { avgRating: 'desc' },
       }),
-      this.prisma.thekedaarProfile.count({ where }),
+      this.prisma.contractorProfile.count({ where }),
     ]);
 
     return { data, total, page, limit };
   }
 
   async findById(id: string) {
-    const profile = await this.prisma.thekedaarProfile.findUnique({
+    const profile = await this.prisma.contractorProfile.findUnique({
       where: { id },
       include: {
         user: {
@@ -76,19 +76,19 @@ export class ThekedaarsService {
     });
 
     if (!profile) {
-      throw new NotFoundException('Thekedaar profile not found');
+      throw new NotFoundException('Contractor profile not found');
     }
 
     return profile;
   }
 
   async updateMyProfile(userId: string, dto: UpdateProfileDto) {
-    const profile = await this.prisma.thekedaarProfile.findUnique({
+    const profile = await this.prisma.contractorProfile.findUnique({
       where: { userId },
     });
 
     if (!profile) {
-      throw new NotFoundException('Thekedaar profile not found');
+      throw new NotFoundException('Contractor profile not found');
     }
 
     const updateData: any = {};
@@ -118,7 +118,7 @@ export class ThekedaarsService {
       };
     }
 
-    return this.prisma.thekedaarProfile.update({
+    return this.prisma.contractorProfile.update({
       where: { userId },
       data: updateData,
       include: {

@@ -13,8 +13,8 @@ export class ChatService {
     const where: any =
       role === 'HOMEOWNER'
         ? { homeownerId: userId }
-        : role === 'THEKEDAAR'
-        ? { thekedaarId: userId }
+        : role === 'CONTRACTOR'
+        ? { contractorId: userId }
         : {};
 
     return this.prisma.chatRoom.findMany({
@@ -26,7 +26,7 @@ export class ChatService {
         homeowner: {
           select: { id: true, name: true, avatarUrl: true },
         },
-        thekedaar: {
+        contractor: {
           select: { id: true, name: true, avatarUrl: true },
         },
         messages: {
@@ -49,7 +49,7 @@ export class ChatService {
         homeowner: {
           select: { id: true, name: true, avatarUrl: true },
         },
-        thekedaar: {
+        contractor: {
           select: { id: true, name: true, avatarUrl: true },
         },
       },
@@ -59,7 +59,7 @@ export class ChatService {
       throw new NotFoundException('Chat room not found');
     }
 
-    if (room.homeownerId !== userId && room.thekedaarId !== userId) {
+    if (room.homeownerId !== userId && room.contractorId !== userId) {
       throw new ForbiddenException('You do not have access to this chat room');
     }
 
@@ -77,7 +77,7 @@ export class ChatService {
       throw new NotFoundException('Chat room not found');
     }
 
-    if (room.homeownerId !== userId && room.thekedaarId !== userId) {
+    if (room.homeownerId !== userId && room.contractorId !== userId) {
       throw new ForbiddenException('You do not have access to this chat room');
     }
 
@@ -108,7 +108,7 @@ export class ChatService {
       throw new NotFoundException('Chat room not found');
     }
 
-    if (room.homeownerId !== senderId && room.thekedaarId !== senderId) {
+    if (room.homeownerId !== senderId && room.contractorId !== senderId) {
       throw new ForbiddenException('You do not have access to this chat room');
     }
 
@@ -131,7 +131,7 @@ export class ChatService {
 
     if (!room) return;
 
-    if (room.homeownerId !== userId && room.thekedaarId !== userId) return;
+    if (room.homeownerId !== userId && room.contractorId !== userId) return;
 
     await this.prisma.message.updateMany({
       where: {

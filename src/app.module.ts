@@ -4,7 +4,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ThekedaarsModule } from './thekedaars/thekedaars.module';
+import { ContractorsModule } from './contractors/contractors.module';
 import { JobsModule } from './jobs/jobs.module';
 import { QuotesModule } from './quotes/quotes.module';
 import { BookingsModule } from './bookings/bookings.module';
@@ -35,7 +35,7 @@ import configuration from './config/configuration';
     PrismaModule,
     AuthModule,
     UsersModule,
-    ThekedaarsModule,
+    ContractorsModule,
     JobsModule,
     QuotesModule,
     BookingsModule,

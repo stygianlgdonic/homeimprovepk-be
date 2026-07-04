@@ -1,7 +1,7 @@
 {
-  "name": "thekedaar-api",
+  "name": "homeimprove-api",
   "version": "0.1.0",
-  "description": "ThekedaarPK backend API",
+  "description": "HomeImprovePK backend API",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

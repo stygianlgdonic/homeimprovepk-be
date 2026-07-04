@@ -21,7 +21,7 @@ export class QuotesController {
 
   @Post('jobs/:jobId/quotes')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.THEKEDAAR)
+  @Roles(UserRole.CONTRACTOR)
   create(
     @Param('jobId') jobId: string,
     @CurrentUser() user: { id: string; phone: string; role: UserRole },

@@ -12,7 +12,7 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        thekedaarProfile: {
+        contractorProfile: {
           include: {
             serviceCategories: true,
             cities: true,
@@ -43,7 +43,7 @@ export class UsersService {
         ...(dto.preferredLang !== undefined && { preferredLang: dto.preferredLang }),
       },
       include: {
-        thekedaarProfile: {
+        contractorProfile: {
           include: {
             serviceCategories: true,
             cities: true,
@@ -52,8 +52,8 @@ export class UsersService {
       },
     });
 
-    if (updated.role === UserRole.THEKEDAAR) {
-      await this.prisma.thekedaarProfile.upsert({
+    if (updated.role === UserRole.CONTRACTOR) {
+      await this.prisma.contractorProfile.upsert({
         where: { userId: id },
         update: {},
         create: {
@@ -81,8 +81,8 @@ export class UsersService {
       },
     });
 
-    if (dto.role === UserRole.THEKEDAAR) {
-      await this.prisma.thekedaarProfile.upsert({
+    if (dto.role === UserRole.CONTRACTOR) {
+      await this.prisma.contractorProfile.upsert({
         where: { userId: id },
         update: {},
         create: {

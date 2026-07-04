@@ -9,15 +9,15 @@ export class AdminService {
   async getStats() {
     const [
       totalUsers,
-      totalThekedaars,
-      approvedThekedaars,
+      totalContractors,
+      approvedContractors,
       totalJobs,
       completedJobs,
       revenueResult,
     ] = await Promise.all([
       this.prisma.user.count(),
-      this.prisma.thekedaarProfile.count(),
-      this.prisma.thekedaarProfile.count({
+      this.prisma.contractorProfile.count(),
+      this.prisma.contractorProfile.count({
         where: { verificationStatus: VerificationStatus.APPROVED },
       }),
       this.prisma.jobPost.count(),
@@ -32,20 +32,20 @@ export class AdminService {
 
     return {
       totalUsers,
-      totalThekedaars,
-      approvedThekedaars,
+      totalContractors,
+      approvedContractors,
       totalJobs,
       completedJobs,
       totalRevenue,
     };
   }
 
-  async getPendingThekedaars(status?: string) {
+  async getPendingContractors(status?: string) {
     const verificationStatus = status
       ? (status as VerificationStatus)
       : VerificationStatus.PENDING;
 
-    return this.prisma.thekedaarProfile.findMany({
+    return this.prisma.contractorProfile.findMany({
       where: { verificationStatus },
       include: {
         user: {
@@ -64,20 +64,20 @@ export class AdminService {
     });
   }
 
-  async verifyThekedaar(profileId: string, status: 'APPROVED' | 'REJECTED') {
-    const profile = await this.prisma.thekedaarProfile.findUnique({
+  async verifyContractor(profileId: string, status: 'APPROVED' | 'REJECTED') {
+    const profile = await this.prisma.contractorProfile.findUnique({
       where: { id: profileId },
     });
 
     if (!profile) {
-      throw new NotFoundException('Thekedaar profile not found');
+      throw new NotFoundException('Contractor profile not found');
     }
 
     if (status !== 'APPROVED' && status !== 'REJECTED') {
       throw new BadRequestException('Status must be APPROVED or REJECTED');
     }
 
-    return this.prisma.thekedaarProfile.update({
+    return this.prisma.contractorProfile.update({
       where: { id: profileId },
       data: { verificationStatus: status as VerificationStatus },
       include: {
@@ -102,7 +102,7 @@ export class AdminService {
         homeowner: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
-        thekedaar: {
+        contractor: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
         payment: true,

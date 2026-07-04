@@ -14,8 +14,8 @@ export class BookingsService {
     const where: any =
       role === UserRole.HOMEOWNER
         ? { homeownerId: userId }
-        : role === UserRole.THEKEDAAR
-        ? { thekedaarId: userId }
+        : role === UserRole.CONTRACTOR
+        ? { contractorId: userId }
         : {};
 
     return this.prisma.booking.findMany({
@@ -31,7 +31,7 @@ export class BookingsService {
         homeowner: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
-        thekedaar: {
+        contractor: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
         reviews: true,
@@ -55,7 +55,7 @@ export class BookingsService {
         homeowner: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
-        thekedaar: {
+        contractor: {
           select: { id: true, name: true, phone: true, avatarUrl: true },
         },
         reviews: true,
@@ -67,7 +67,7 @@ export class BookingsService {
       throw new NotFoundException('Booking not found');
     }
 
-    if (booking.homeownerId !== userId && booking.thekedaarId !== userId) {
+    if (booking.homeownerId !== userId && booking.contractorId !== userId) {
       throw new ForbiddenException('You do not have access to this booking');
     }
 
@@ -81,7 +81,7 @@ export class BookingsService {
       throw new NotFoundException('Booking not found');
     }
 
-    if (booking.homeownerId !== userId && booking.thekedaarId !== userId) {
+    if (booking.homeownerId !== userId && booking.contractorId !== userId) {
       throw new ForbiddenException('You do not have access to this booking');
     }
 
@@ -93,9 +93,9 @@ export class BookingsService {
       },
     });
 
-    // Update thekedaar totalJobs count
-    await this.prisma.thekedaarProfile.updateMany({
-      where: { userId: booking.thekedaarId },
+    // Update contractor totalJobs count
+    await this.prisma.contractorProfile.updateMany({
+      where: { userId: booking.contractorId },
       data: { totalJobs: { increment: 1 } },
     });
 

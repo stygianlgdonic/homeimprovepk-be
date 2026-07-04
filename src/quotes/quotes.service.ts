@@ -8,11 +8,11 @@ import { JobStatus, QuoteStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 
-const thekedaarSelect = {
+const contractorSelect = {
   id: true,
   name: true,
   avatarUrl: true,
-  thekedaarProfile: {
+  contractorProfile: {
     select: { avgRating: true, verificationStatus: true },
   },
 } as const;
@@ -21,7 +21,7 @@ const thekedaarSelect = {
 export class QuotesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(jobPostId: string, thekedaarUserId: string, dto: CreateQuoteDto) {
+  async create(jobPostId: string, contractorUserId: string, dto: CreateQuoteDto) {
     const job = await this.prisma.jobPost.findUnique({ where: { id: jobPostId } });
 
     if (!job) {
@@ -33,31 +33,31 @@ export class QuotesService {
     }
 
     const existing = await this.prisma.quote.findUnique({
-      where: { jobPostId_thekedaarId: { jobPostId, thekedaarId: thekedaarUserId } },
+      where: { jobPostId_contractorId: { jobPostId, contractorId: contractorUserId } },
     });
 
     if (existing) {
       throw new BadRequestException('You have already submitted a quote for this job');
     }
 
-    const thekedaarProfile = await this.prisma.thekedaarProfile.findUnique({
-      where: { userId: thekedaarUserId },
+    const contractorProfile = await this.prisma.contractorProfile.findUnique({
+      where: { userId: contractorUserId },
     });
 
-    if (!thekedaarProfile) {
-      throw new NotFoundException('Thekedaar profile not found — complete your profile first');
+    if (!contractorProfile) {
+      throw new NotFoundException('Contractor profile not found — complete your profile first');
     }
 
     const quote = await this.prisma.quote.create({
       data: {
         jobPostId,
-        thekedaarId: thekedaarUserId,
+        contractorId: contractorUserId,
         amount: dto.amount,
         description: dto.description,
         estimatedDays: dto.estimatedDays,
         status: QuoteStatus.PENDING,
       },
-      include: { thekedaar: { select: thekedaarSelect } },
+      include: { contractor: { select: contractorSelect } },
     });
 
     if (job.status === JobStatus.OPEN) {
@@ -78,13 +78,13 @@ export class QuotesService {
 
     const where: Record<string, unknown> = { jobPostId };
 
-    if (requesterRole === 'THEKEDAAR') {
-      where.thekedaarId = requesterId;
+    if (requesterRole === 'CONTRACTOR') {
+      where.contractorId = requesterId;
     }
 
     return this.prisma.quote.findMany({
       where,
-      include: { thekedaar: { select: thekedaarSelect } },
+      include: { contractor: { select: contractorSelect } },
       orderBy: { createdAt: 'asc' },
     });
   }
@@ -115,7 +115,7 @@ export class QuotesService {
     const acceptedQuote = await this.prisma.quote.update({
       where: { id: quoteId },
       data: { status: QuoteStatus.ACCEPTED },
-      include: { thekedaar: { select: thekedaarSelect } },
+      include: { contractor: { select: contractorSelect } },
     });
 
     const booking = await this.prisma.booking.create({
@@ -123,7 +123,7 @@ export class QuotesService {
         jobPostId: quote.jobPostId,
         quoteId,
         homeownerId,
-        thekedaarId: acceptedQuote.thekedaar.id,
+        contractorId: acceptedQuote.contractor.id,
         status: 'SCHEDULED',
       },
     });
@@ -134,7 +134,7 @@ export class QuotesService {
       create: {
         jobPostId: quote.jobPostId,
         homeownerId,
-        thekedaarId: acceptedQuote.thekedaar.id,
+        contractorId: acceptedQuote.contractor.id,
       },
     });
 

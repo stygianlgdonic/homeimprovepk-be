@@ -21,7 +21,7 @@ export class ReviewsService {
       throw new NotFoundException('Booking not found');
     }
 
-    if (booking.homeownerId !== authorId && booking.thekedaarId !== authorId) {
+    if (booking.homeownerId !== authorId && booking.contractorId !== authorId) {
       throw new ForbiddenException('You are not part of this booking');
     }
 
@@ -37,9 +37,9 @@ export class ReviewsService {
       throw new BadRequestException('You have already reviewed this booking');
     }
 
-    // Determine subject: if author is homeowner, subject is thekedaar; if thekedaar, subject is homeowner
+    // Determine subject: if author is homeowner, subject is contractor; if contractor, subject is homeowner
     const subjectId =
-      authorId === booking.homeownerId ? booking.thekedaarId : booking.homeownerId;
+      authorId === booking.homeownerId ? booking.contractorId : booking.homeownerId;
 
     const review = await this.prisma.review.create({
       data: {
@@ -55,19 +55,19 @@ export class ReviewsService {
       },
     });
 
-    // Recalculate thekedaar avgRating if the subject is a thekedaar
-    const thekedaarProfile = await this.prisma.thekedaarProfile.findUnique({
+    // Recalculate contractor avgRating if the subject is a contractor
+    const contractorProfile = await this.prisma.contractorProfile.findUnique({
       where: { userId: subjectId },
     });
 
-    if (thekedaarProfile) {
+    if (contractorProfile) {
       const stats = await this.prisma.review.aggregate({
         where: { subjectId },
         _avg: { rating: true },
         _count: { rating: true },
       });
 
-      await this.prisma.thekedaarProfile.update({
+      await this.prisma.contractorProfile.update({
         where: { userId: subjectId },
         data: {
           avgRating: stats._avg.rating ?? 0,
@@ -79,7 +79,7 @@ export class ReviewsService {
     return review;
   }
 
-  async findByThekedaar(userId: string) {
+  async findByContractor(userId: string) {
     return this.prisma.review.findMany({
       where: { subjectId: userId },
       include: {
